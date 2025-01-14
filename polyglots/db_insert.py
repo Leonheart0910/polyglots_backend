@@ -3,17 +3,25 @@ from mysql.connector import Error
 
 # MySQL 데이터베이스 연결 정보
 DB_CONFIG = {
-    "host": "localhost",  # 또는 서버 주소
-    "user": "your_username",
-    "password": "your_password",
-    "database": "your_database"
+    "host": "43.201.113.85",
+    "port": 3306,
+    "user": "ubuntu",
+    "password": "******",
+    "database": "polyglot_db"
 }
 
 # 데이터 삽입 함수 (write)
-def write(user_email, word_mean, word_explain, word_example):
+def write(user_email, word_origin, word_mean, word_explain, word_example):
+    connection = None  # 초기화
     try:
         # DB 연결
         connection = mysql.connector.connect(**DB_CONFIG)
+        if connection.is_connected():
+            print("Successfully connected to the database")
+        else:
+            print("Connection failed")
+            return
+
         cursor = connection.cursor()
 
         # User 테이블에 데이터 삽입
@@ -21,12 +29,16 @@ def write(user_email, word_mean, word_explain, word_example):
         cursor.execute(user_query, (user_email,))
         user_id = cursor.lastrowid  # 삽입된 User의 ID 가져오기
 
+        if not user_id:
+            print("Failed to retrieve last inserted user_id")
+            return
+
         # Word_Review 테이블에 데이터 삽입
         review_query = """
-        INSERT INTO word_review (user_id, word_mean, word_explain, word_example, created_at, updated_at)
-        VALUES (%s, %s, %s, %s, NOW(), NOW())
+        INSERT INTO word_review (user_id, word_origin, word_mean, word_explain, word_example, created_at, updated_at)
+        VALUES (%s, %s, %s, %s, %s, NOW(), NOW())
         """
-        cursor.execute(review_query, (user_id, word_mean, word_explain, word_example))
+        cursor.execute(review_query, (user_id, word_origin, word_mean, word_explain, word_example))
 
         # 트랜잭션 커밋
         connection.commit()
@@ -35,7 +47,7 @@ def write(user_email, word_mean, word_explain, word_example):
     except Error as e:
         print(f"Error: {e}")
     finally:
-        if connection.is_connected():
+        if connection and connection.is_connected():
             cursor.close()
             connection.close()
 
@@ -44,6 +56,12 @@ def read():
     try:
         # DB 연결
         connection = mysql.connector.connect(**DB_CONFIG)
+        if connection.is_connected():
+            print("Successfully connected to the database")
+        else:
+            print("Connection failed")
+            return
+
         cursor = connection.cursor()
 
         # JOIN을 사용하여 두 테이블의 데이터 읽기
@@ -62,7 +80,7 @@ def read():
     except Error as e:
         print(f"Error: {e}")
     finally:
-        if connection.is_connected():
+        if connection and connection.is_connected():
             cursor.close()
             connection.close()
 
@@ -71,8 +89,9 @@ if __name__ == "__main__":
     # INSERT 테스트
     write(
         user_email="test@example.com",
-        word_mean="Example Word",
-        word_explain="This is the explanation of the word.",
+        word_origin="Example Word",
+        word_mean="예시 단어",
+        word_explain="예시란다",
         word_example="This is an example sentence using the word."
     )
 
