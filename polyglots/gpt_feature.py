@@ -27,6 +27,8 @@ def gen_review(searched_words:List[str], target_language)->str:
     """No need to implement the exception
     searched_words: The words in our database which are searched by user in the past.
     target_language: The language that the user is learning."""
+    if not searched_words:
+        return -1
     system_message_content = f"You are language learner assistant. Your task is to generate a complex sentence into a single paragraph in {target_language}. The paragraph must include all the words included in the given list and be completed within 2048 tokens. The words in the list are seperated by comma."
     words = ""
     for word in searched_words:
@@ -57,8 +59,3 @@ def sent_seg(complex_sentence:str, mother_tongue:str, target_language:str)->str:
         max_completion_tokens=2048
     )
     return response.choices[0].message.content
-
-
-
-
-search_word("polyglot","we got a many polyglot","korean", "english")
