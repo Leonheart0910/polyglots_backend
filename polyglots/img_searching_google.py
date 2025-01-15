@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import base64
 from io import BytesIO
 from PIL import Image
+from typing import List
 
 def fetch_google_images(query, num_images=12):
     #안전빵 12개 리스팅
@@ -72,9 +73,8 @@ def remove_trailing_data(base64_data):
         return base64_data
 
 # 테스트 실행
-if __name__ == "__main__":
-    query = "고추(채소)"
-    base64_images = fetch_google_images(query, num_images=15)
+def search_imgs(query:str, num_images:int = 12)-> List[str]:
+    base64_images = fetch_google_images(query, num_images)
 
     # 크기 조건에 맞는 이미지를 저장할 리스트
     output1 = []
@@ -95,15 +95,17 @@ if __name__ == "__main__":
             elif not output3:
                 output3.append(cleaned_base64_image)
 
-    # 출력 결과 확인
-    print("\nOutput1:")
+    img_list = []
     for img in output1:
-        print(img)
+        img_list.append(img)
+        
 
-    print("\nOutput2:")
+    
     for img in output2:
-        print(img)
+        img_list.append(img)
 
-    print("\nOutput3:")
+
     for img in output3:
-        print(img)
+        img_list.append(img)
+
+    return img_list
