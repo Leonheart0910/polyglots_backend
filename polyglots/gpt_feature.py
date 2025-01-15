@@ -1,7 +1,7 @@
 from openai import OpenAI
 from typing import List
 
-openai_api_key = ""
+openai_api_key = "YOUR_API_KEY"
 client = OpenAI(api_key = openai_api_key)
 
 def search_word(searching_word:str, context_sentence:str, mother_tongue:str, target_language:str)->str:
@@ -49,7 +49,7 @@ def sent_seg(complex_sentence:str, mother_tongue:str, target_language:str)->str:
     """No need to implement the exception
     mother_tongue: The user's mother tougue.
     target_language: The language that the user is learning."""
-    system_message_content = f"You are language learner assistant. Your task is to decompose a complex sentence into two or more simple sentences. Simple sentence refers to a sentence with at least one noun and one verb. The response format is following:\nSentence1: ...\nSentence2: ..."
+    system_message_content = f"You are language learner assistant. Your task is to decompose a complex sentence into two or more simple sentences. Simple sentence refers to a sentence with at least one noun and one verb. Each sentence must be separated by slash(/) with no space"
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "system", "content": system_message_content},
